@@ -513,6 +513,88 @@ body::after {
     animation: glowShimmer 1s ease-in-out;
 }
 
+/* DISCORD - Violet lumineux */
+@keyframes discordHoverFloat {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        transform: translateY(-3px) scale(1.08);
+    }
+}
+
+@keyframes discordShine {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+.discord-card {
+    border-color: rgba(88, 101, 242, 0.45) !important;
+    box-shadow: 0 0 18px rgba(88, 101, 242, 0.28), inset 0 0 12px rgba(88, 101, 242, 0.08);
+    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.discord-card .card-header {
+    background: linear-gradient(135deg, rgba(88, 101, 242, 0.9) 0%, rgba(121, 132, 255, 0.85) 100%) !important;
+    box-shadow: 0 2px 12px rgba(88, 101, 242, 0.35);
+    background-size: 200% 200%;
+}
+
+.discord-card .card-body {
+    background: rgba(88, 101, 242, 0.10) !important;
+}
+
+.discord-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgba(88, 101, 242, 0.9) !important;
+    box-shadow: 0 0 28px rgba(88, 101, 242, 0.55), 0 0 42px rgba(88, 101, 242, 0.25);
+    background-color: rgba(88, 101, 242, 0.14) !important;
+}
+
+.discord-card:hover .card-header {
+    animation: discordShine 1.4s linear infinite alternate;
+}
+
+.discord-card:hover .fa-discord {
+    animation: discordHoverFloat 1s ease-in-out infinite;
+}
+
+.discord-card:hover .card-body {
+    background: rgba(88, 101, 242, 0.16) !important;
+}
+
+.discord-card .discord-link {
+    color: #aab2ff;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.discord-card .discord-link:hover {
+    color: #c7ccff;
+    text-shadow: 0 0 12px rgba(88, 101, 242, 0.8);
+    transform: scale(1.03);
+}
+
+.discord-card .copy-btn {
+    border: 2px solid rgba(170, 178, 255, 0.65);
+    color: #aab2ff;
+    background: rgba(88, 101, 242, 0.12);
+    box-shadow: 0 0 12px rgba(88, 101, 242, 0.35);
+    border-radius: 6px;
+}
+
+.discord-card .copy-btn:hover {
+    background: rgba(88, 101, 242, 0.42);
+    color: #ffffff;
+    border-color: #c7ccff;
+    box-shadow: 0 0 20px rgba(88, 101, 242, 0.8), 0 0 30px rgba(88, 101, 242, 0.45);
+    transform: translateY(-2px);
+}
+
 /* ============================================
    CARTES AVEC GLOW
    ============================================ */
