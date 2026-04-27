@@ -1,274 +1,1267 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // ============================================
-    // PHONE NUMBER POPUP INITIALIZATION
-    // ============================================
-    
-    const PHONE_POPUP_STORAGE_KEY = 'phonePopupDismissed';
-    const PHONE_NUMBER_STORAGE_KEY = 'userPhoneNumber';
-    const POPUP_SHOW_DELAY = 3000; // 3 seconds
-    
-    const phonePopupOverlay = document.getElementById('phonePopupOverlay');
-    const phoneForm = document.getElementById('phoneForm');
-    const phoneInput = document.getElementById('phoneInput');
-    const phoneError = document.getElementById('phoneError');
-    const phoneSuccess = document.getElementById('phoneSuccess');
-    const phonePopupClose = document.getElementById('phonePopupClose');
-    const phoneSkipBtn = document.getElementById('phoneSkipBtn');
-    
-    // Phone validation function
-    function validatePhoneNumber(phone) {
-        const cleanedPhone = phone.replace(/\D/g, '');
-        if (cleanedPhone.length < 8) {
-            return {
-                valid: false,
-                message: 'Le numéro doit contenir au minimum 8 chiffres'
-            };
-        }
-        if (!/^\d+$/.test(cleanedPhone)) {
-            return {
-                valid: false,
-                message: 'Le numéro ne doit contenir que des chiffres'
-            };
-        }
-        return { valid: true, cleanedPhone: cleanedPhone };
-    }
-    
-    // Hide popup function
-    function hidePhonePopup() {
-        if (phonePopupOverlay) {
-            phonePopupOverlay.style.display = 'none';
-        }
-    }
-    
-    // Show popup function
-    function showPhonePopup() {
-        if (localStorage.getItem(PHONE_POPUP_STORAGE_KEY) === 'true') {
-            return; // Already dismissed
-        }
-        if (phonePopupOverlay) {
-            phonePopupOverlay.style.display = 'flex';
-            phoneInput?.focus();
-        }
-    }
-    
-    // Dismiss popup (remember user choice)
-    function dismissPhonePopup() {
-        localStorage.setItem(PHONE_POPUP_STORAGE_KEY, 'true');
-        hidePhonePopup();
-        // Reset form
-        if (phoneForm) phoneForm.reset();
-        if (phoneSuccess) phoneSuccess.style.display = 'none';
-        if (phoneError) phoneError.textContent = '';
-        if (phoneInput) phoneInput.classList.remove('error');
-    }
-    
-    // Handle form submission
-    if (phoneForm) {
-        phoneForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const phoneValue = phoneInput?.value?.trim();
-            if (!phoneValue) {
-                if (phoneError) phoneError.textContent = 'Veuillez entrer un numéro de téléphone';
-                return;
-            }
-            
-            const validation = validatePhoneNumber(phoneValue);
-            
-            if (!validation.valid) {
-                if (phoneError) phoneError.textContent = validation.message;
-                if (phoneInput) phoneInput.classList.add('error');
-                return;
-            }
-            
-            // Clear error
-            if (phoneError) phoneError.textContent = '';
-            if (phoneInput) phoneInput.classList.remove('error');
-            
-            // Store phone number
-            localStorage.setItem(PHONE_NUMBER_STORAGE_KEY, validation.cleanedPhone);
-            
-            // Show success message
-            if (phoneForm) phoneForm.style.display = 'none';
-            if (phoneSuccess) phoneSuccess.style.display = 'block';
-            
-            // Dismiss popup after showing success
-            setTimeout(dismissPhonePopup, 1500);
-        });
-    }
-    
-    // Close button handler
-    if (phonePopupClose) {
-        phonePopupClose.addEventListener('click', dismissPhonePopup);
-    }
-    
-    // Skip button handler
-    if (phoneSkipBtn) {
-        phoneSkipBtn.addEventListener('click', dismissPhonePopup);
-    }
-    
-    // Click outside overlay handler
-    if (phonePopupOverlay) {
-        phonePopupOverlay.addEventListener('click', function(e) {
-            if (e.target === phonePopupOverlay) {
-                dismissPhonePopup();
-            }
-        });
-    }
-    
-    // Show popup after delay
-    setTimeout(showPhonePopup, POPUP_SHOW_DELAY);
-    
-    // ============================================
-    // EXISTING COPY BUTTON FUNCTIONALITY
-    // ============================================
-    
-    const copyButtons = document.querySelectorAll('.copy-btn');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700;800&display=swap');
 
-    copyButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const textToCopy = this.getAttribute('data-text');
-            navigator.clipboard.writeText(textToCopy).then(function() {
-                // Change button text temporarily
-                const originalHTML = button.innerHTML;
-                button.innerHTML = '<i class="fas fa-check"></i>';
-                button.classList.add('btn-success');
-                button.classList.remove('btn-outline-primary', 'btn-outline-success', 'btn-outline-info');
-                setTimeout(() => {
-                    button.innerHTML = originalHTML;
-                    button.classList.remove('btn-success');
-                    button.classList.add(button.classList.contains('ms-2') ? 'btn-outline-primary' : button.classList[1]); // Restore original class
-                }, 2000);
-            }).catch(function(err) {
-                console.error('Erreur lors de la copie: ', err);
-                alert('Erreur lors de la copie dans le presse-papiers.');
-            });
-        });
-    });
+body {
+    background: url('Logo MID.png'),
+                radial-gradient(ellipse at 20% 50%, rgba(102, 126, 234, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(118, 75, 162, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 40% 80%, rgba(200, 100, 200, 0.2) 0%, transparent 50%),
+                linear-gradient(180deg, #0a0e27 0%, #16213e 40%, #0f3460 100%);
+    background-size: cover, auto, auto, auto, auto;
+    background-position: center center, center center, center center, center center, center center;
+    background-repeat: no-repeat, repeat, repeat, repeat, repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    position: relative;
+    overflow-x: hidden;
+}
 
-    // ============================================
-    // EXISTING QR CODE FUNCTIONALITY
-    // ============================================
+/* Effet d'étoiles scintillantes */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(1px 1px at 10% 20%, white, rgba(255,255,255,0)),
+        radial-gradient(1px 1px at 30% 70%, white, rgba(255,255,255,0)),
+        radial-gradient(1.5px 1.5px at 50% 50%, white, rgba(255,255,255,0)),
+        radial-gradient(1px 1px at 70% 10%, white, rgba(255,255,255,0)),
+        radial-gradient(1px 1px at 90% 60%, white, rgba(255,255,255,0)),
+        radial-gradient(1px 1px at 20% 80%, white, rgba(255,255,255,0)),
+        radial-gradient(1px 1px at 60% 30%, white, rgba(255,255,255,0)),
+        radial-gradient(1px 1px at 80% 90%, white, rgba(255,255,255,0)),
+        radial-gradient(1px 1px at 40% 40%, white, rgba(255,255,255,0)),
+        radial-gradient(1px 1px at 15% 45%, white, rgba(255,255,255,0));
+    background-size: 200% 200%;
+    background-repeat: repeat;
+    animation: twinkleStars 8s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Nébuleuse animée */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse 800px 600px at 20% 30%, rgba(147, 51, 234, 0.15) 0%, transparent 60%),
+                radial-gradient(ellipse 900px 500px at 80% 70%, rgba(79, 39, 245, 0.1) 0%, transparent 60%);
+    animation: nebulaDrift 20s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes twinkleStars {
+    0%, 100% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+@keyframes nebulaDrift {
+    0%, 100% {
+        transform: translateX(0) translateY(0);
+    }
+    25% {
+        transform: translateX(10px) translateY(-10px);
+    }
+    50% {
+        transform: translateX(-20px) translateY(10px);
+    }
+    75% {
+        transform: translateX(15px) translateY(5px);
+    }
+}
+
+@keyframes spinGalaxy {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.container {
+    background: rgba(20, 20, 40, 0.7);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 
+                inset 0 0 30px rgba(102, 126, 234, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.avatar {
+    animation: bounceIn 1s ease-out;
+}
+
+@keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.05); }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.card {
+    border: 2px solid transparent;
+    border-radius: 10px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    background-color: rgba(20, 20, 40, 0.6);
+    backdrop-filter: blur(8px);
+    border: 2px solid rgba(102, 126, 234, 0.2);
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(147, 112, 219, 0.2), transparent);
+    transition: left 0.5s ease;
+    z-index: 1;
+}
+
+.card:hover::before {
+    left: 100%;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
+                0 0 30px rgba(102, 126, 234, 0.4);
+    background-color: rgba(30, 30, 60, 0.8);
+    border-color: rgba(102, 126, 234, 0.6);
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+    font-weight: bold;
+    transition: all 0.4s ease;
+    color: white !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(5px);
+}
+
+.card-body {
+    transition: all 0.4s ease;
+    background-color: rgba(30, 30, 60, 0.5);
+    backdrop-filter: blur(6px);
+    color: #e0e0e0 !important;
+}
+
+/* ============================================
+   ANIMATIONS DE GLOW PRINCIPALES
+   ============================================ */
+
+@keyframes glowShimmer {
+    0% {
+        box-shadow: 0 0 5px currentColor;
+    }
+    50% {
+        box-shadow: 0 0 20px currentColor, 0 0 30px currentColor;
+    }
+    100% {
+        box-shadow: 0 0 10px currentColor;
+    }
+}
+
+@keyframes glowPulse {
+    0%, 100% {
+        filter: brightness(1);
+        box-shadow: 0 0 10px currentColor;
+    }
+    50% {
+        filter: brightness(1.2);
+        box-shadow: 0 0 30px currentColor, 0 0 50px currentColor;
+    }
+}
+
+@keyframes colorShift {
+    0% { filter: hue-rotate(0deg); }
+    50% { filter: hue-rotate(10deg); }
+    100% { filter: hue-rotate(0deg); }
+}
+
+@keyframes radiusGlow {
+    0% {
+        box-shadow: 0 0 10px;
+    }
+    50% {
+        box-shadow: 0 0 20px, 0 0 30px, inset 0 0 20px;
+    }
+    100% {
+        box-shadow: 0 0 10px;
+    }
+}
+
+/* ============================================
+   ANIMATIONS DE BORDURES LUMINEUSES
+   ============================================ */
+
+@keyframes borderGlowBlue {
+    0% {
+        box-shadow: 0 0 5px rgba(102, 126, 234, 0.3), inset 0 0 5px rgba(102, 126, 234, 0.1);
+        border-color: rgba(102, 126, 234, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(102, 126, 234, 0.6), inset 0 0 15px rgba(102, 126, 234, 0.2);
+        border-color: rgba(102, 126, 234, 1);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(102, 126, 234, 0.3), inset 0 0 5px rgba(102, 126, 234, 0.1);
+        border-color: rgba(102, 126, 234, 0.5);
+    }
+}
+
+@keyframes borderGlowGreen {
+    0% {
+        box-shadow: 0 0 5px rgba(37, 211, 102, 0.3), inset 0 0 5px rgba(37, 211, 102, 0.1);
+        border-color: rgba(37, 211, 102, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(37, 211, 102, 0.6), inset 0 0 15px rgba(37, 211, 102, 0.2);
+        border-color: rgba(37, 211, 102, 1);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(37, 211, 102, 0.3), inset 0 0 5px rgba(37, 211, 102, 0.1);
+        border-color: rgba(37, 211, 102, 0.5);
+    }
+}
+
+@keyframes borderGlowCyan {
+    0% {
+        box-shadow: 0 0 5px rgba(23, 162, 184, 0.3), inset 0 0 5px rgba(23, 162, 184, 0.1);
+        border-color: rgba(23, 162, 184, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(23, 162, 184, 0.6), inset 0 0 15px rgba(23, 162, 184, 0.2);
+        border-color: rgba(23, 162, 184, 1);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(23, 162, 184, 0.3), inset 0 0 5px rgba(23, 162, 184, 0.1);
+        border-color: rgba(23, 162, 184, 0.5);
+    }
+}
+
+.popup-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(5, 10, 25, 0.8);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+}
+
+.popup-overlay.popup-visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.popup-card {
+    width: min(520px, 100%);
+    background: rgba(12, 18, 45, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+    border-radius: 24px;
+    padding: 28px 26px;
+    animation: popupFadeIn 0.45s ease forwards;
+    display: grid;
+    gap: 18px;
+}
+
+.popup-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.popup-top h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: #f7f7ff;
+}
+
+.popup-top p {
+    margin: 0.4rem 0 0;
+    color: #c7c8da;
+    font-size: 0.98rem;
+    line-height: 1.5;
+}
+
+.popup-close {
+    border: none;
+    background: transparent;
+    color: #d9d9ff;
+    font-size: 1.4rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 6px 10px;
+    border-radius: 12px;
+    transition: background-color 0.25s ease;
+}
+
+.popup-close:hover,
+.popup-close:focus {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.popup-label {
+    color: #e5e7ff;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.popup-input {
+    width: 100%;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.04);
+    color: #f8f8ff;
+    padding: 14px 16px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.popup-input:focus {
+    border-color: rgba(102, 126, 234, 0.8);
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.12);
+}
+
+.popup-error {
+    margin: 0;
+    color: #ff8080;
+    min-height: 1.25rem;
+    font-size: 0.95rem;
+}
+
+.popup-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.popup-actions .btn {
+    min-width: 120px;
+}
+
+.popup-note {
+    margin: 0;
+    color: #b8b9cd;
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+@keyframes popupFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes borderGlowFacebook {
+    0% {
+        box-shadow: 0 0 5px rgba(24, 119, 242, 0.3), inset 0 0 5px rgba(24, 119, 242, 0.1);
+        border-color: rgba(24, 119, 242, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(24, 119, 242, 0.6), inset 0 0 15px rgba(24, 119, 242, 0.2);
+        border-color: rgba(24, 119, 242, 1);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(24, 119, 242, 0.3), inset 0 0 5px rgba(24, 119, 242, 0.1);
+        border-color: rgba(24, 119, 242, 0.5);
+    }
+}
+
+/* Animation de bordure rotative */
+@keyframes borderRotate {
+    0% {
+        border-image: linear-gradient(0deg, #667eea, #764ba2, #667eea) 0;
+        transform: rotate(0deg);
+    }
+    25% {
+        border-image: linear-gradient(90deg, #667eea, #764ba2, #667eea) 0;
+    }
+    50% {
+        border-image: linear-gradient(180deg, #667eea, #764ba2, #667eea) 0;
+    }
+    75% {
+        border-image: linear-gradient(270deg, #667eea, #764ba2, #667eea) 0;
+    }
+    100% {
+        border-image: linear-gradient(360deg, #667eea, #764ba2, #667eea) 0;
+        transform: rotate(0deg);
+    }
+}
+
+/* Animation de couleur fluide pour backgrounds */
+@keyframes colorWave {
+    0%, 100% {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(102, 126, 234, 0.12) 100%);
+    }
+    50% {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.18) 0%, rgba(102, 126, 234, 0.22) 100%);
+    }
+}
+
+@keyframes colorWaveGreen {
+    0%, 100% {
+        background: linear-gradient(135deg, rgba(37, 211, 102, 0.08) 0%, rgba(37, 211, 102, 0.12) 100%);
+    }
+    50% {
+        background: linear-gradient(135deg, rgba(37, 211, 102, 0.18) 0%, rgba(37, 211, 102, 0.22) 100%);
+    }
+}
+
+@keyframes colorWaveCyan {
+    0%, 100% {
+        background: linear-gradient(135deg, rgba(23, 162, 184, 0.08) 0%, rgba(23, 162, 184, 0.12) 100%);
+    }
+    50% {
+        background: linear-gradient(135deg, rgba(23, 162, 184, 0.18) 0%, rgba(23, 162, 184, 0.22) 100%);
+    }
+}
+
+@keyframes colorWaveFacebook {
+    0%, 100% {
+        background: linear-gradient(135deg, rgba(24, 119, 242, 0.08) 0%, rgba(24, 119, 242, 0.12) 100%);
+    }
+    50% {
+        background: linear-gradient(135deg, rgba(24, 119, 242, 0.18) 0%, rgba(24, 119, 242, 0.22) 100%);
+    }
+}
+
+/* ============================================
+   BOUTONS - STYLES DE BASE AVEC GLOW
+   ============================================ */
+
+.btn-outline-primary, 
+.btn-outline-success, 
+.btn-outline-info {
+    border-width: 2px;
+    position: relative;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.btn-outline-primary {
+    box-shadow: 0 0 15px rgba(102, 126, 234, 0.4);
+    border-color: #667eea;
+    color: #667eea;
+}
+
+.btn-outline-primary:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 25px rgba(102, 126, 234, 0.8), 0 0 40px rgba(102, 126, 234, 0.5);
+    background-color: #667eea;
+    color: white;
+    animation: glowPulse 0.6s ease-out forwards;
+}
+
+.btn-outline-success {
+    box-shadow: 0 0 15px rgba(40, 167, 69, 0.4);
+    border-color: #28a745;
+    color: #28a745;
+}
+
+.btn-outline-success:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 25px rgba(40, 167, 69, 0.8), 0 0 40px rgba(40, 167, 69, 0.5);
+    background-color: #28a745;
+    color: white;
+    animation: glowPulse 0.6s ease-out forwards;
+}
+
+.btn-outline-info {
+    box-shadow: 0 0 15px rgba(23, 162, 184, 0.4);
+    border-color: #17a2b8;
+    color: #17a2b8;
+}
+
+.btn-outline-info:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 25px rgba(23, 162, 184, 0.8), 0 0 40px rgba(23, 162, 184, 0.5);
+    background-color: #17a2b8;
+    color: white;
+    animation: glowPulse 0.6s ease-out forwards;
+}
+
+.btn-outline-primary:active,
+.btn-outline-success:active,
+.btn-outline-info:active {
+    transform: scale(0.95);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Bouton Partager le contact */
+.share-contact {
+    border-width: 2px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    box-shadow: 0 0 18px rgba(102, 126, 234, 0.35);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.share-contact:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 0 32px rgba(102, 126, 234, 0.6);
+}
+
+/* QR container */
+#qrContainer {
+    display: block;
+}
+
+#qrContainer .card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(102,126,234,0.12);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+#qrCode img, #qrCode canvas {
+    display: block;
+    margin: 0 auto;
+}
+
+#qrContainer p.small {
+    color: rgba(224,224,255,0.8);
+}
+
+/* ============================================
+   CLASSES PERSONNALISÉES PAR TYPE
+   ============================================ */
+
+/* CONTACT - Bleu lumineux */
+.contact {
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-color: #667eea !important;
+    color: #667eea !important;
+    box-shadow: 0 0 15px rgba(102, 126, 234, 0.3) !important;
+}
+
+.contact:hover {
+    background: linear-gradient(135deg, #667eea 0%, #5568d3 100%) !important;
+    color: white !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.8), 
+                0 0 40px rgba(102, 126, 234, 0.5),
+                inset 0 0 20px rgba(255, 255, 255, 0.2) !important;
+    transform: translateY(-3px) scale(1.05);
+    animation: glowShimmer 1s ease-in-out;
+}
+
+/* WHATSAPP - Vert lumineux */
+.whatsapp {
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-color: #25d366 !important;
+    color: #25d366 !important;
+    box-shadow: 0 0 15px rgba(37, 211, 102, 0.3) !important;
+}
+
+.whatsapp:hover {
+    background: linear-gradient(135deg, #25d366 0%, #20a856 100%) !important;
+    color: white !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 20px rgba(37, 211, 102, 0.8), 
+                0 0 40px rgba(37, 211, 102, 0.5),
+                inset 0 0 20px rgba(255, 255, 255, 0.2) !important;
+    transform: translateY(-3px) scale(1.05);
+    animation: glowShimmer 1s ease-in-out;
+}
+
+/* EMAIL - Cyan lumineux */
+.email {
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-color: #17a2b8 !important;
+    color: #17a2b8 !important;
+    box-shadow: 0 0 15px rgba(23, 162, 184, 0.3) !important;
+}
+
+.email:hover {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
+    color: white !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 20px rgba(23, 162, 184, 0.8), 
+                0 0 40px rgba(23, 162, 184, 0.5),
+                inset 0 0 20px rgba(255, 255, 255, 0.2) !important;
+    transform: translateY(-3px) scale(1.05);
+    animation: glowShimmer 1s ease-in-out;
+}
+
+/* FACEBOOK - Bleu Facebook lumineux */
+.facebook {
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-color: #1877f2 !important;
+    color: #1877f2 !important;
+    box-shadow: 0 0 15px rgba(24, 119, 242, 0.3) !important;
+}
+
+.facebook:hover {
+    background: linear-gradient(135deg, #1877f2 0%, #0a66c2 100%) !important;
+    color: white !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 20px rgba(24, 119, 242, 0.8), 
+                0 0 40px rgba(24, 119, 242, 0.5),
+                inset 0 0 20px rgba(255, 255, 255, 0.2) !important;
+    transform: translateY(-3px) scale(1.05);
+    animation: glowShimmer 1s ease-in-out;
+}
+
+/* DISCORD - Violet lumineux */
+@keyframes discordHoverFloat {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        transform: translateY(-3px) scale(1.08);
+    }
+}
+
+@keyframes discordShine {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+.discord-card {
+    border-color: rgba(88, 101, 242, 0.45) !important;
+    box-shadow: 0 0 18px rgba(88, 101, 242, 0.28), inset 0 0 12px rgba(88, 101, 242, 0.08);
+    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.discord-card .card-header {
+    background: linear-gradient(135deg, rgba(88, 101, 242, 0.9) 0%, rgba(121, 132, 255, 0.85) 100%) !important;
+    box-shadow: 0 2px 12px rgba(88, 101, 242, 0.35);
+    background-size: 200% 200%;
+}
+
+.discord-card .card-body {
+    background: rgba(88, 101, 242, 0.10) !important;
+}
+
+.discord-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgba(88, 101, 242, 0.9) !important;
+    box-shadow: 0 0 28px rgba(88, 101, 242, 0.55), 0 0 42px rgba(88, 101, 242, 0.25);
+    background-color: rgba(88, 101, 242, 0.14) !important;
+}
+
+.discord-card:hover .card-header {
+    animation: discordShine 1.4s linear infinite alternate;
+}
+
+.discord-card:hover .fa-discord {
+    animation: discordHoverFloat 1s ease-in-out infinite;
+}
+
+.discord-card:hover .card-body {
+    background: rgba(88, 101, 242, 0.16) !important;
+}
+
+.discord-card .discord-link {
+    color: #aab2ff;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.discord-card .discord-link:hover {
+    color: #c7ccff;
+    text-shadow: 0 0 12px rgba(88, 101, 242, 0.8);
+    transform: scale(1.03);
+}
+
+.discord-card .copy-btn {
+    border: 2px solid rgba(170, 178, 255, 0.65);
+    color: #aab2ff;
+    background: rgba(88, 101, 242, 0.12);
+    box-shadow: 0 0 12px rgba(88, 101, 242, 0.35);
+    border-radius: 6px;
+}
+
+.discord-card .copy-btn:hover {
+    background: rgba(88, 101, 242, 0.42);
+    color: #ffffff;
+    border-color: #c7ccff;
+    box-shadow: 0 0 20px rgba(88, 101, 242, 0.8), 0 0 30px rgba(88, 101, 242, 0.45);
+    transform: translateY(-2px);
+}
+
+/* ============================================
+   CARTES AVEC GLOW
+   ============================================ */
+
+.card-glow {
+    border: 2px solid transparent;
+    background: white;
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-glow:hover {
+    border-color: rgba(102, 126, 234, 0.5);
+    box-shadow: 0 0 30px rgba(102, 126, 234, 0.5), 
+                0 0 60px rgba(102, 126, 234, 0.3),
+                inset 0 0 20px rgba(102, 126, 234, 0.1);
+    transform: translateY(-10px);
+}
+
+/* Cartes avec couleurs spécifiques */
+.card-contact::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 10px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.card-contact:hover::before {
+    opacity: 0.3;
+    animation: glowPulse 1.5s ease-in-out infinite;
+}
+
+/* ============================================
+   LIENS AVEC GLOW
+   ============================================ */
+
+a.glow-link {
+    position: relative;
+    text-decoration: none;
+    color: #667eea;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+a.glow-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -3px;
+    left: 0;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    box-shadow: 0 0 10px #667eea;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+a.glow-link:hover {
+    color: #667eea;
+    text-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+}
+
+a.glow-link:hover::after {
+    width: 100%;
+    box-shadow: 0 0 20px #667eea, 0 0 30px rgba(102, 126, 234, 0.5);
+}
+
+/* ============================================
+   ANIMATION ALTERNATIVE - PULSE CONTINUE
+   ============================================ */
+
+@keyframes continuousPulse {
+    0%, 100% {
+        opacity: 1;
+        text-shadow: 0 0 5px currentColor;
+    }
+    50% {
+        opacity: 0.8;
+        text-shadow: 0 0 15px currentColor;
+    }
+}
+
+.pulse-glow {
+    animation: continuousPulse 2s ease-in-out infinite;
+}
+
+/* ============================================
+   COULEURS DE FOND DES CARTES PAR THÈME
+   ============================================ */
+
+/* 🔵 CONTACT - Fond bleu clair */
+.row > .col-md-6:nth-child(1) .card {
+    border-color: rgba(102, 126, 234, 0.3);
+    box-shadow: 0 0 15px rgba(102, 126, 234, 0.2);
+}
+
+.row > .col-md-6:nth-child(1) .card-header {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.6) 0%, rgba(85, 104, 211, 0.6) 100%) !important;
+    box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+    backdrop-filter: blur(8px);
+}
+
+.row > .col-md-6:nth-child(1) .card-body {
+    background: rgba(102, 126, 234, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.row > .col-md-6:nth-child(1) .card:hover {
+    border-color: rgba(102, 126, 234, 0.8);
+    box-shadow: 0 0 25px rgba(102, 126, 234, 0.6), 0 0 40px rgba(102, 126, 234, 0.3);
+    background-color: rgba(102, 126, 234, 0.15);
+}
+
+.row > .col-md-6:nth-child(1) .card:hover .card-body {
+    background: rgba(102, 126, 234, 0.2);
+}
+
+.row > .col-md-6:nth-child(1) .card-body a {
+    color: #8eb4f7;
+    font-weight: 600;
+}
+
+.row > .col-md-6:nth-child(1) .card-body a:hover {
+    color: #b0d4ff;
+    text-shadow: 0 0 10px rgba(102, 126, 234, 0.8);
+}
+
+/* 🟢 WHATSAPP - Fond vert clair */
+.row > .col-md-6:nth-child(2) .card {
+    border-color: rgba(37, 211, 102, 0.3);
+    box-shadow: 0 0 15px rgba(37, 211, 102, 0.2);
+}
+
+.row > .col-md-6:nth-child(2) .card-header {
+    background: linear-gradient(135deg, rgba(37, 211, 102, 0.6) 0%, rgba(32, 168, 86, 0.6) 100%) !important;
+    box-shadow: 0 2px 10px rgba(37, 211, 102, 0.3);
+    backdrop-filter: blur(8px);
+}
+
+.row > .col-md-6:nth-child(2) .card-body {
+    background: rgba(37, 211, 102, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.row > .col-md-6:nth-child(2) .card:hover {
+    border-color: rgba(37, 211, 102, 0.8);
+    box-shadow: 0 0 25px rgba(37, 211, 102, 0.6), 0 0 40px rgba(37, 211, 102, 0.3);
+    background-color: rgba(37, 211, 102, 0.15);
+}
+
+.row > .col-md-6:nth-child(2) .card:hover .card-body {
+    background: rgba(37, 211, 102, 0.2);
+}
+
+.row > .col-md-6:nth-child(2) .card-body a {
+    color: #5fde9e;
+    font-weight: 600;
+}
+
+.row > .col-md-6:nth-child(2) .card-body a:hover {
+    color: #7fffb3;
+    text-shadow: 0 0 10px rgba(37, 211, 102, 0.8);
+}
+
+/* 🔷 EMAIL - Fond cyan clair */
+.row > .col-md-6:nth-child(3) .card {
+    border-color: rgba(23, 162, 184, 0.3);
+    box-shadow: 0 0 15px rgba(23, 162, 184, 0.2);
+}
+
+.row > .col-md-6:nth-child(3) .card-header {
+    background: linear-gradient(135deg, rgba(23, 162, 184, 0.6) 0%, rgba(19, 132, 150, 0.6) 100%) !important;
+    box-shadow: 0 2px 10px rgba(23, 162, 184, 0.3);
+    backdrop-filter: blur(8px);
+}
+
+.row > .col-md-6:nth-child(3) .card-body {
+    background: rgba(23, 162, 184, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.row > .col-md-6:nth-child(3) .card:hover {
+    border-color: rgba(23, 162, 184, 0.8);
+    box-shadow: 0 0 25px rgba(23, 162, 184, 0.6), 0 0 40px rgba(23, 162, 184, 0.3);
+    background-color: rgba(23, 162, 184, 0.15);
+}
+
+.row > .col-md-6:nth-child(3) .card:hover .card-body {
+    background: rgba(23, 162, 184, 0.2);
+}
+
+.row > .col-md-6:nth-child(3) .card-body a {
+    color: #5fc5d9;
+    font-weight: 600;
+}
+
+.row > .col-md-6:nth-child(3) .card-body a:hover {
+    color: #7fd9e8;
+    text-shadow: 0 0 10px rgba(23, 162, 184, 0.8);
+}
+
+/* 🔵 FACEBOOK - Fond bleu foncé très clair */
+.row > .col-md-6:nth-child(4) .card {
+    border-color: rgba(24, 119, 242, 0.3);
+    box-shadow: 0 0 15px rgba(24, 119, 242, 0.2);
+}
+
+.row > .col-md-6:nth-child(4) .card-header {
+    background: linear-gradient(135deg, rgba(24, 119, 242, 0.6) 0%, rgba(10, 102, 194, 0.6) 100%) !important;
+    box-shadow: 0 2px 10px rgba(24, 119, 242, 0.3);
+    backdrop-filter: blur(8px);
+}
+
+.row > .col-md-6:nth-child(4) .card-body {
+    background: rgba(24, 119, 242, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.row > .col-md-6:nth-child(4) .card:hover {
+    border-color: rgba(24, 119, 242, 0.8);
+    box-shadow: 0 0 25px rgba(24, 119, 242, 0.6), 0 0 40px rgba(24, 119, 242, 0.3);
+    background-color: rgba(24, 119, 242, 0.15);
+}
+
+.row > .col-md-6:nth-child(4) .card:hover .card-body {
+    background: rgba(24, 119, 242, 0.2);
+}
+
+.row > .col-md-6:nth-child(4) .card-body a {
+    color: #6bb6ff;
+    font-weight: 600;
+}
+
+.row > .col-md-6:nth-child(4) .card-body a:hover {
+    color: #8dcfff;
+    text-shadow: 0 0 10px rgba(24, 119, 242, 0.8);
+}
+
+/* ============================================
+   BOUTONS COPY HARMONISÉS PAR THÈME
+   ============================================ */
+
+.row > .col-md-6:nth-child(1) .copy-btn {
+    border: 2px solid rgba(139, 180, 247, 0.6);
+    color: #8eb4f7;
+    background: rgba(102, 126, 234, 0.1);
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+    border-radius: 6px;
+    backdrop-filter: blur(4px);
+}
+
+.row > .col-md-6:nth-child(1) .copy-btn:hover {
+    background: rgba(102, 126, 234, 0.4);
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.8), 0 0 30px rgba(102, 126, 234, 0.5);
+    transform: translateY(-2px);
+    border-color: #8eb4f7;
+}
+
+.row > .col-md-6:nth-child(2) .copy-btn {
+    border: 2px solid rgba(95, 222, 158, 0.6);
+    color: #5fde9e;
+    background: rgba(37, 211, 102, 0.1);
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(37, 211, 102, 0.3);
+    border-radius: 6px;
+    backdrop-filter: blur(4px);
+}
+
+.row > .col-md-6:nth-child(2) .copy-btn:hover {
+    background: rgba(37, 211, 102, 0.4);
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(37, 211, 102, 0.8), 0 0 30px rgba(37, 211, 102, 0.5);
+    transform: translateY(-2px);
+    border-color: #5fde9e;
+}
+
+.row > .col-md-6:nth-child(3) .copy-btn {
+    border: 2px solid rgba(95, 197, 217, 0.6);
+    color: #5fc5d9;
+    background: rgba(23, 162, 184, 0.1);
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(23, 162, 184, 0.3);
+    border-radius: 6px;
+    backdrop-filter: blur(4px);
+}
+
+.row > .col-md-6:nth-child(3) .copy-btn:hover {
+    background: rgba(23, 162, 184, 0.4);
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(23, 162, 184, 0.8), 0 0 30px rgba(23, 162, 184, 0.5);
+    transform: translateY(-2px);
+    border-color: #5fc5d9;
+}
+
+.row > .col-md-6:nth-child(4) .copy-btn {
+    border: 2px solid rgba(107, 182, 255, 0.6);
+    color: #6bb6ff;
+    background: rgba(24, 119, 242, 0.1);
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(24, 119, 242, 0.3);
+    border-radius: 6px;
+    backdrop-filter: blur(4px);
+}
+
+.row > .col-md-6:nth-child(4) .copy-btn:hover {
+    background: rgba(24, 119, 242, 0.4);
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(24, 119, 242, 0.8), 0 0 30px rgba(24, 119, 242, 0.5);
+    transform: translateY(-2px);
+    border-color: #6bb6ff;
+}
+
+footer {
+    margin-top: 50px;
+    color: rgba(224, 224, 224, 0.7);
+    text-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+}
+
+footer p {
+    background: rgba(20, 20, 40, 0.5);
+    padding: 15px 20px;
+    border-radius: 8px;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+@media (max-width: 1200px) {
+    .display-4 {
+        font-size: 3rem !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+        border-radius: 12px;
+    }
     
-    // Gestion du QR auto-hide
-    let qrAutoHideTimer = null;
-    const HIDE_DELAY_MS = 20000; // 20 secondes
-    const HIDE_ANIM_MS = 320; // doit correspondre à la CSS transition (~280ms)
-
-    const qrContainer = document.getElementById('qrContainer');
-    const qrTarget = document.getElementById('qrCode');
-
-    function finalizeHide() {
-        // Après l'animation, masquer complètement
-        if (qrContainer) {
-            qrContainer.style.display = 'none';
-            qrContainer.classList.remove('qr-hidden');
-            qrContainer.classList.remove('qr-visible');
-        }
-        if (qrTarget) qrTarget.innerHTML = '';
+    .display-4 {
+        font-size: 1.8rem !important;
+        letter-spacing: 0.5px;
     }
-
-    function hideQr() {
-        if (qrAutoHideTimer) {
-            clearTimeout(qrAutoHideTimer);
-            qrAutoHideTimer = null;
-        }
-        if (qrContainer) {
-            // lancer l'animation de sortie
-            qrContainer.classList.remove('qr-visible');
-            qrContainer.classList.add('qr-hidden');
-            // nettoyer après la durée d'animation
-            setTimeout(finalizeHide, HIDE_ANIM_MS);
-        } else {
-            if (qrTarget) qrTarget.innerHTML = '';
-        }
+    
+    .lead {
+        font-size: 1rem;
     }
-
-    function showQrFor(url) {
-        try {
-            if (!(qrTarget && typeof QRCode === 'function')) return;
-            // préparer le conteneur
-            if (qrContainer) {
-                qrContainer.style.display = 'block';
-                // force reflow pour déclencher la transition
-                // eslint-disable-next-line no-unused-expressions
-                qrContainer.offsetHeight;
-                qrContainer.classList.remove('qr-hidden');
-                qrContainer.classList.add('qr-visible');
-            }
-            // (re)générer le QR
-            qrTarget.innerHTML = '';
-            new QRCode(qrTarget, { text: url, width: 180, height: 180 });
-
-            if (qrAutoHideTimer) clearTimeout(qrAutoHideTimer);
-            qrAutoHideTimer = setTimeout(() => {
-                hideQr();
-            }, HIDE_DELAY_MS);
-        } catch (err) {
-            console.error('Erreur showQrFor: ', err);
-        }
+    
+    .avatar img {
+        width: 120px !important;
+        height: 120px !important;
     }
-
-    // Share contact button handling — affiche aussi le QR
-    const shareBtn = document.getElementById('shareContactBtn');
-    if (shareBtn) {
-        shareBtn.addEventListener('click', async function() {
-            const shareUrl = window.location.href;
-            const originalHTML = shareBtn.innerHTML;
-            try {
-                if (navigator.share) {
-                    await navigator.share({
-                        title: "Contact Todisoa",
-                        text: "Voici mon contact",
-                        url: shareUrl
-                    });
-                    shareBtn.innerHTML = '<i class="fas fa-check"></i> Partagé';
-                    shareBtn.classList.add('btn-success');
-                    shareBtn.classList.remove('btn-outline-primary');
-                    setTimeout(() => {
-                        shareBtn.innerHTML = originalHTML;
-                        shareBtn.classList.remove('btn-success');
-                        shareBtn.classList.add('btn-outline-primary');
-                    }, 2000);
-                } else if (navigator.clipboard) {
-                    await navigator.clipboard.writeText(shareUrl);
-                    shareBtn.innerHTML = '<i class="fas fa-check"></i> Copié';
-                    shareBtn.classList.add('btn-success');
-                    shareBtn.classList.remove('btn-outline-primary');
-                    setTimeout(() => {
-                        shareBtn.innerHTML = originalHTML;
-                        shareBtn.classList.remove('btn-success');
-                        shareBtn.classList.add('btn-outline-primary');
-                    }, 2000);
-                } else {
-                    window.open(shareUrl, '_blank');
-                }
-            } catch (err) {
-                console.error('Erreur partage/copie: ', err);
-                alert('Impossible de partager/copier le lien.');
-            }
-
-            // Toujours afficher le QR après le clic (même si partage/copie échoue)
-            showQrFor(shareUrl);
-        });
+    
+    .row > [class*='col-'] {
+        margin-bottom: 15px;
     }
-
-    // Génération automatique du QR code pour l'URL courante
-    // Génération automatique du QR code pour l'URL courante (appel initial)
-    (function generateAutoQr() {
-        try {
-            const url = window.location.href;
-            showQrFor(url);
-        } catch (err) {
-            console.error('Erreur génération QR automatique: ', err);
-        }
-    })();
-
-    // Bouton fermer pour masquer le QR code
-    const closeQrBtn = document.getElementById('closeQrBtn');
-    if (closeQrBtn) {
-        closeQrBtn.addEventListener('click', function() {
-            hideQr();
-        });
+    
+    .card-body p {
+        font-size: 0.9rem;
     }
-});
+    
+    .card {
+        border-radius: 8px;
+    }
+    
+    .contact:hover,
+    .whatsapp:hover,
+    .email:hover,
+    .facebook:hover {
+        transform: translateY(-2px) scale(1.02);
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding: 15px;
+        border-radius: 10px;
+    }
+    
+    .display-4 {
+        font-size: 1.5rem !important;
+        letter-spacing: 0px;
+        line-height: 1.3;
+    }
+    
+    .lead {
+        font-size: 0.9rem;
+    }
+    
+    .header-top {
+        margin-bottom: 20px !important;
+    }
+    
+    .avatar img {
+        width: 100px !important;
+        height: 100px !important;
+    }
+    
+    .card {
+        border-radius: 6px;
+        margin-bottom: 12px;
+    }
+    
+    .card-header {
+        padding: 10px 15px !important;
+        font-size: 0.95rem;
+    }
+    
+    .card-body {
+        padding: 12px 15px !important;
+    }
+    
+    .card-body p {
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+    }
+    
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.7rem;
+    }
+    
+    .copy-btn {
+        margin-left: 5px !important;
+    }
+    
+    footer {
+        margin-top: 30px;
+    }
+    
+    footer p {
+        padding: 10px 15px;
+        font-size: 0.85rem;
+    }
+}
+
+/* ============================================
+   HEADER ET TEXTES - STYLE GALAXIE
+   ============================================ */
+
+header {
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #e0e0ff;
+    text-shadow: 0 0 15px rgba(102, 126, 234, 0.4);
+    font-weight: 700;
+}
+
+.lead {
+    color: rgba(224, 224, 255, 0.8);
+    text-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+    font-weight: 500;
+}
+
+.text-primary {
+    color: #8eb4f7 !important;
+    text-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
+}
+
+.text-muted {
+    color: rgba(200, 200, 220, 0.7) !important;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700;800&display=swap');
+
+.display-4 {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(90deg, #ff006e, #8338ec, #3a86ff, #06ffa5, #ffbe0b, #ff006e);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 15px rgba(102, 126, 234, 0.4)) drop-shadow(0 0 25px rgba(255, 0, 110, 0.3));
+    animation: gradientShift 4s ease infinite, textPulse 2s ease-in-out infinite;
+    font-size: 3.5rem !important;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes textPulse {
+    0%, 100% {
+        filter: drop-shadow(0 0 15px rgba(102, 126, 234, 0.4)) drop-shadow(0 0 25px rgba(255, 0, 110, 0.3));
+    }
+    50% {
+        filter: drop-shadow(0 0 25px rgba(102, 126, 234, 0.7)) drop-shadow(0 0 35px rgba(255, 0, 110, 0.6));
+    }
+}
+
+/* ============================================
+   QR: animations d'apparition / disparition
+   ============================================ */
+#qrContainer {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+    transition: opacity 280ms ease, transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    pointer-events: none;
+}
+
+#qrContainer.qr-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+#qrContainer.qr-hidden {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+    pointer-events: none;
+}
+
+#qrContainer .card {
+    transition: box-shadow 200ms ease, transform 200ms ease;
+}
+
+#qrContainer.qr-visible .card {
+    transform: translateY(0);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+}
