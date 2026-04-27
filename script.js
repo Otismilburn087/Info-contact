@@ -1,4 +1,128 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // ============================================
+    // PHONE NUMBER POPUP INITIALIZATION
+    // ============================================
+    
+    const PHONE_POPUP_STORAGE_KEY = 'phonePopupDismissed';
+    const PHONE_NUMBER_STORAGE_KEY = 'userPhoneNumber';
+    const POPUP_SHOW_DELAY = 3000; // 3 seconds
+    
+    const phonePopupOverlay = document.getElementById('phonePopupOverlay');
+    const phoneForm = document.getElementById('phoneForm');
+    const phoneInput = document.getElementById('phoneInput');
+    const phoneError = document.getElementById('phoneError');
+    const phoneSuccess = document.getElementById('phoneSuccess');
+    const phonePopupClose = document.getElementById('phonePopupClose');
+    const phoneSkipBtn = document.getElementById('phoneSkipBtn');
+    
+    // Phone validation function
+    function validatePhoneNumber(phone) {
+        const cleanedPhone = phone.replace(/\D/g, '');
+        if (cleanedPhone.length < 8) {
+            return {
+                valid: false,
+                message: 'Le numéro doit contenir au minimum 8 chiffres'
+            };
+        }
+        if (!/^\d+$/.test(cleanedPhone)) {
+            return {
+                valid: false,
+                message: 'Le numéro ne doit contenir que des chiffres'
+            };
+        }
+        return { valid: true, cleanedPhone: cleanedPhone };
+    }
+    
+    // Hide popup function
+    function hidePhonePopup() {
+        if (phonePopupOverlay) {
+            phonePopupOverlay.style.display = 'none';
+        }
+    }
+    
+    // Show popup function
+    function showPhonePopup() {
+        if (localStorage.getItem(PHONE_POPUP_STORAGE_KEY) === 'true') {
+            return; // Already dismissed
+        }
+        if (phonePopupOverlay) {
+            phonePopupOverlay.style.display = 'flex';
+            phoneInput?.focus();
+        }
+    }
+    
+    // Dismiss popup (remember user choice)
+    function dismissPhonePopup() {
+        localStorage.setItem(PHONE_POPUP_STORAGE_KEY, 'true');
+        hidePhonePopup();
+        // Reset form
+        if (phoneForm) phoneForm.reset();
+        if (phoneSuccess) phoneSuccess.style.display = 'none';
+        if (phoneError) phoneError.textContent = '';
+        if (phoneInput) phoneInput.classList.remove('error');
+    }
+    
+    // Handle form submission
+    if (phoneForm) {
+        phoneForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const phoneValue = phoneInput?.value?.trim();
+            if (!phoneValue) {
+                if (phoneError) phoneError.textContent = 'Veuillez entrer un numéro de téléphone';
+                return;
+            }
+            
+            const validation = validatePhoneNumber(phoneValue);
+            
+            if (!validation.valid) {
+                if (phoneError) phoneError.textContent = validation.message;
+                if (phoneInput) phoneInput.classList.add('error');
+                return;
+            }
+            
+            // Clear error
+            if (phoneError) phoneError.textContent = '';
+            if (phoneInput) phoneInput.classList.remove('error');
+            
+            // Store phone number
+            localStorage.setItem(PHONE_NUMBER_STORAGE_KEY, validation.cleanedPhone);
+            
+            // Show success message
+            if (phoneForm) phoneForm.style.display = 'none';
+            if (phoneSuccess) phoneSuccess.style.display = 'block';
+            
+            // Dismiss popup after showing success
+            setTimeout(dismissPhonePopup, 1500);
+        });
+    }
+    
+    // Close button handler
+    if (phonePopupClose) {
+        phonePopupClose.addEventListener('click', dismissPhonePopup);
+    }
+    
+    // Skip button handler
+    if (phoneSkipBtn) {
+        phoneSkipBtn.addEventListener('click', dismissPhonePopup);
+    }
+    
+    // Click outside overlay handler
+    if (phonePopupOverlay) {
+        phonePopupOverlay.addEventListener('click', function(e) {
+            if (e.target === phonePopupOverlay) {
+                dismissPhonePopup();
+            }
+        });
+    }
+    
+    // Show popup after delay
+    setTimeout(showPhonePopup, POPUP_SHOW_DELAY);
+    
+    // ============================================
+    // EXISTING COPY BUTTON FUNCTIONALITY
+    // ============================================
+    
     const copyButtons = document.querySelectorAll('.copy-btn');
 
     copyButtons.forEach(button => {
@@ -22,6 +146,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // ============================================
+    // EXISTING QR CODE FUNCTIONALITY
+    // ============================================
+    
     // Gestion du QR auto-hide
     let qrAutoHideTimer = null;
     const HIDE_DELAY_MS = 20000; // 20 secondes
