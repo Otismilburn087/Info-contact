@@ -10,48 +10,6 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Phone Number Popup Modal -->
-    <div id="phonePopupOverlay" class="phone-popup-overlay">
-        <div class="phone-popup-container">
-            <button id="phonePopupClose" class="phone-popup-close" aria-label="Fermer">
-                <i class="fas fa-times"></i>
-            </button>
-            <div class="phone-popup-content">
-                <h3 class="phone-popup-title">Restez en contact</h3>
-                <p class="phone-popup-subtitle">Entrez votre numéro de téléphone (optionnel)</p>
-                
-                <form id="phoneForm" class="phone-form">
-                    <div class="phone-form-group">
-                        <input 
-                            type="tel" 
-                            id="phoneInput" 
-                            class="phone-input" 
-                            placeholder="Votre numéro de téléphone"
-                            autocomplete="tel"
-                            aria-label="Numéro de téléphone"
-                        >
-                        <small class="phone-input-hint">Minimum 8 chiffres</small>
-                        <div id="phoneError" class="phone-error"></div>
-                    </div>
-
-                    <div class="phone-form-buttons">
-                        <button type="button" id="phoneSkipBtn" class="phone-btn phone-btn-secondary">
-                            <i class="fas fa-times"></i> Passer
-                        </button>
-                        <button type="submit" class="phone-btn phone-btn-primary">
-                            <i class="fas fa-check"></i> Envoyer
-                        </button>
-                    </div>
-                </form>
-
-                <div id="phoneSuccess" class="phone-success" style="display: none;">
-                    <i class="fas fa-check-circle"></i>
-                    <p>Merci ! Votre numéro a été enregistré.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="container my-5">
         <header class="mb-5">
             <div class="header-top d-flex justify-content-center align-items-center mb-4">
@@ -86,8 +44,8 @@
                         <i class="fas fa-phone"></i> Contacts
                     </div>
                     <div class="card-body">
-                        <p class="mb-2"><i class="fas fa-mobile-alt"></i> <a href="tel:+261 38 87 673 55" class="text-decoration-none">+261 38 87 673 55</a> <button class="btn btn-sm btn-outline-p[...]
-                        <p class="mb-0"><i class="fas fa-mobile-alt"></i> <a href="tel:+261339696184" class="text-decoration-none">+261 33 96 961 84</a> <button class="btn btn-sm btn-outline-prima[...]
+                        <p class="mb-2"><i class="fas fa-mobile-alt"></i> <a href="tel:+261 38 87 673 55" class="text-decoration-none">+261 38 87 673 55</a> <button class="btn btn-sm btn-outline-primary ms-2 copy-btn" data-text="+261 38 87 673 55"><i class="fas fa-copy"></i></button></p>
+                        <p class="mb-0"><i class="fas fa-mobile-alt"></i> <a href="tel:+261339696184" class="text-decoration-none">+261 33 96 961 84</a> <button class="btn btn-sm btn-outline-primary ms-2 copy-btn" data-text="+261 33 96 961 84"><i class="fas fa-copy"></i></button></p>
                     </div>
                 </div>
             </div>
@@ -98,7 +56,7 @@
                         <i class="fab fa-whatsapp"></i> WhatsApp
                     </div>
                     <div class="card-body">
-                        <p class="mb-0"><i class="fab fa-whatsapp"></i> <a href="https://wa.me/261378901866" class="text-decoration-none" target="_blank">+261 37 89 018 66</a> <button class="btn b[...]
+                        <p class="mb-0"><i class="fab fa-whatsapp"></i> <a href="https://wa.me/261378901866" class="text-decoration-none" target="_blank">+261 37 89 018 66</a> <button class="btn btn-sm btn-outline-success ms-2 copy-btn" data-text="+261 37 89 018 66"><i class="fas fa-copy"></i></button></p>
                     </div>
                 </div>
             </div>
@@ -109,8 +67,8 @@
                         <i class="fas fa-envelope"></i> E-mails
                     </div>
                     <div class="card-body">
-                        <p class="mb-2"><i class="fas fa-envelope"></i> <a href="mailto:todisoandrianjakamanana@gmail.com" class="text-decoration-none">todisoandrianjakamanana@gmail.com</a> <butto[...]
-                        <p class="mb-0"><i class="fas fa-envelope"></i> <a href="mailto:gabisangelo52@gmail.com" class="text-decoration-none">gabisangelo52@gmail.com</a> <button class="btn btn-sm [...]
+                        <p class="mb-2"><i class="fas fa-envelope"></i> <a href="mailto:todisoandrianjakamanana@gmail.com" class="text-decoration-none">todisoandrianjakamanana@gmail.com</a> <button class="btn btn-sm btn-outline-info ms-2 copy-btn" data-text="todisoandrianjakamanana@gmail.com"><i class="fas fa-copy"></i></button></p>
+                        <p class="mb-0"><i class="fas fa-envelope"></i> <a href="mailto:gabisangelo52@gmail.com" class="text-decoration-none">gabisangelo52@gmail.com</a> <button class="btn btn-sm btn-outline-info ms-2 copy-btn" data-text="gabisangelo52@gmail.com"><i class="fas fa-copy"></i></button></p>
                     </div>
                 </div>
             </div>
@@ -121,8 +79,8 @@
                         <i class="fab fa-facebook"></i> Facebook
                     </div>
                     <div class="card-body">
-                        <p class="mb-2"><i class="fab fa-facebook"></i> Gabis Todisoa Angelo <button class="btn btn-sm btn-outline-primary ms-2 copy-btn" data-text="Gabis Todisoa Angelo"><i class=[...]
-                        <p class="mb-0"><i class="fab fa-facebook"></i> Todisoa AMTM <button class="btn btn-sm btn-outline-primary ms-2 copy-btn" data-text="Todisoa AMTM"><i class="fas fa-copy"></[...]
+                        <p class="mb-2"><i class="fab fa-facebook"></i> Gabis Todisoa Angelo <button class="btn btn-sm btn-outline-primary ms-2 copy-btn" data-text="Gabis Todisoa Angelo"><i class="fas fa-copy"></i></button></p>
+                        <p class="mb-0"><i class="fab fa-facebook"></i> Todisoa AMTM <button class="btn btn-sm btn-outline-primary ms-2 copy-btn" data-text="Todisoa AMTM"><i class="fas fa-copy"></i></button></p>
                     </div>
                 </div>
             </div>
@@ -140,20 +98,40 @@
                                 <i class="fas fa-copy"></i>
                             </button>
                         </p>
-                        <p class="small text-muted mt-2 mb-0">Cliquez sur le nom d'utilisateur pour ouvrir le profil Discord.</p>
+                        <p class="small text-muted mt-2 mb-0">Cliquez sur le nom d’utilisateur pour ouvrir le profil Discord.</p>
                     </div>
                 </div>
             </div>
         </div>
 
         <section class="text-center my-4">
-            <p class="lead mb-1">Je vous remercie sincèrement pour l'attention portée à cette page.</p>
-            <p class="small text-muted">Je reste à votre entière disposition pour toute collaboration, opportunité ou demande d'information.</p>
+            <p class="lead mb-1">Je vous remercie sincèrement pour l’attention portée à cette page.</p>
+            <p class="small text-muted">Je reste à votre entière disposition pour toute collaboration, opportunité ou demande d’information.</p>
         </section>
 
         <footer class="text-center mt-5">
             <p class="text-muted">&copy; 2026 Todisoa. Tous droits réservés.</p>
         </footer>
+    </div>
+
+    <div id="contactPopupOverlay" class="popup-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
+        <div class="popup-card">
+            <div class="popup-top">
+                <div>
+                    <h2 id="popupTitle">Entrer votre téléphone</h2>
+                    <p>Optionnellement, laissez votre numéro pour être contacté plus facilement. Votre choix sera mémorisé et le pop-up ne reviendra pas.</p>
+                </div>
+                <button id="popupCloseBtn" class="popup-close" type="button" aria-label="Fermer la fenêtre">×</button>
+            </div>
+            <label for="popupPhoneInput" class="popup-label">Numéro de téléphone</label>
+            <input id="popupPhoneInput" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="15" placeholder="Ex : 261380000000" class="popup-input" aria-describedby="popupPhoneError">
+            <p id="popupPhoneError" class="popup-error" aria-live="polite"></p>
+            <div class="popup-actions">
+                <button id="popupSubmitBtn" type="button" class="btn btn-primary">Soumettre</button>
+                <button id="popupSkipBtn" type="button" class="btn btn-outline-light">Passer</button>
+            </div>
+            <p class="popup-note">Aucun numéro ne sera demandé à nouveau si vous choisissez de passer.</p>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
